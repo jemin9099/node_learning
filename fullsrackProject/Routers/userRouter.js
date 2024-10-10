@@ -7,14 +7,14 @@ const router = express.Router();
 app.use(express.json())
 router.post('/register',async(req,res) =>{    
     let user = await User.findOne({email:req.body.email})
-    if(user) return res.send('user already exist')
+    if(user) return res.status(400).send('user already exist')
      user = new User({
         name:req.body.name,
         email:req.body.email,
         password: await bcrypt.hash(req.body.password,10)
     })
     const result = await user.save()
-    res.send(result)
+    res.status(201).send(result)
 })
 router.post ('/login',async(req,res) =>{
     let user = await User.findOne({email:req.body.email})
