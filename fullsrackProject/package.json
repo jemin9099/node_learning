@@ -1,0 +1,30 @@
+{
+  "name": "fullsrackproject",
+  "version": "1.0.0",
+  "description": "This is for node js and mongodb learn ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jemin9099/node_learning.git"
+  },
+  "author": "jemin viradiya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jemin9099/node_learning/issues"
+  },
+  "homepage": "https://github.com/jemin9099/node_learning#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.1",
+    "nodemon": "^3.1.7",
+    "router": "^1.3.8"
+  }
+}
