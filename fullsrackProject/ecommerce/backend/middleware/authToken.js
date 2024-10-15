@@ -18,7 +18,7 @@ async  function authToken (req, res, next) {
         req.user = user
         next()
     }catch(err){
-        res.status(400).json({message:err.message,error:true,success:false,data:null})      
+        res.status(401).json({message:err.message,error:true,success:false,data:null})      
     } 
 }
 

@@ -1,5 +1,16 @@
 <script setup lang="ts">
 import Logo from './Logo.vue';
+import { useUserData } from '@/composable/useUserData';
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const { user } =  useUserData();
+
+
+const logout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    router.push({name: 'login'})
+}
 </script>
 <template>
    <header class="h-16 shadow-md bg-white">
@@ -14,9 +25,19 @@ import Logo from './Logo.vue';
             </div>
         </div>
         <div class="flex items-center gap-7">
-            <div class="cursor-pointer">
-                <mdicon name="account" />   
-            </div> 
+            <div class="releative group flex justify-center">
+                <div class="cursor-pointer ">
+                    <div class="w-[30px] h-[30px] overflow-hidden relative rounded-full" v-if="user?.image">
+                        <img :src="user.image" alt="" >
+                    </div>
+                    <mdicon name="account" v-else />   
+                </div> 
+                <div class="absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded">
+                    <nav>
+                        <RouterLink to="/admin-panel" class="whitespace-nowrap hover:bg-slate-100 p-2 hidden group-hover:block">Admin Panel</RouterLink>
+                    </nav>
+                </div>
+            </div>
             <div class="cursor-pointer relative">
                <span>
                     <mdicon name="cart" />   
@@ -26,7 +47,8 @@ import Logo from './Logo.vue';
                </div>
             </div>
             <div>
-                <RouterLink to="/login" class="px-3 bg-red-600 hover:bg-red-700 text-white rounded-full py-1">Login</RouterLink>
+                <button class="px-3 bg-red-600 hover:bg-red-700 text-white rounded-full py-1" v-if="!user"><RouterLink to="/login" >Login</RouterLink></button>
+                <button class="px-3 bg-red-600 hover:bg-red-700 text-white rounded-full py-1" v-else  @click="logout">Logout</button>
             </div>
         </div>
     </div>

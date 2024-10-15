@@ -4,9 +4,8 @@ import { ref } from 'vue'
 import axios from 'axios';
 import { useToast } from '@/common/useToast.js'
 import common from '@/common/index'
-import { c } from 'vite/dist/node/types.d-aGj9QkWt';
 const { toastTypeError, toastTypeSuccess } = useToast()
-const { SummaryApi, headers } = common
+const { SummaryApi, headers , authHeaders} = common
 const router = useRouter()
 const showPassword = ref(false)
 const emailError = ref('');
@@ -32,6 +31,8 @@ const handleLogin = async() => {
                 if (data.success) {
                     localStorage.setItem('token' , data.data)
                     toastTypeSuccess(data.message)
+                    const {data:userFetchData} = await axios.get(SummaryApi.userDetail.url, {headers: authHeaders})
+                    localStorage.setItem('user' , JSON.stringify(userFetchData.data))
                     router.push({name: 'home'})
                 }
             }
