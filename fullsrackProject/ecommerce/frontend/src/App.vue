@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView , useRoute } from 'vue-router'
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
+import AdminPanel from './views/AdminPanel.vue';
+const route = useRoute( )
+console.log(route.path);
+
 </script>
 <template>
   <Header />
   <main class="min-h-[calc(100vh-120px)]">
-    <RouterView />
+    <AdminPanel v-if="route.meta.isAdmin" >
+        <RouterView />
+    </AdminPanel>
+    <RouterView v-else/>
   </main>
   <Footer/>
 </template>

@@ -33,7 +33,7 @@ const handleLogin = async() => {
                     toastTypeSuccess(data.message)
                     const {data:userFetchData} = await axios.get(SummaryApi.userDetail.url, {headers: authHeaders})
                     localStorage.setItem('user' , JSON.stringify(userFetchData.data))
-                    router.push({name: 'home'})
+                    router.push({name: 'home'} )
                 }
             }
         }

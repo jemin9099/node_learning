@@ -1,4 +1,4 @@
-const backendDomain = 'http://localhost:5000'
+const backendDomain = 'http://localhost:3000'
 const SummaryApi = {
     signup:{
         url:`${backendDomain}/api/signup`,
@@ -8,6 +8,14 @@ const SummaryApi = {
     },
     userDetail:{
         url:`${backendDomain}/api/user-detail`,
+    },
+    allusers:{
+        url:`${backendDomain}/api/users`,
+    },
+    updateUser:{
+        url:(id) => {
+            return `${backendDomain}/api/update-user/${id}`
+        },
     }
 }
 const headers = {

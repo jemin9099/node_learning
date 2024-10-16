@@ -1,15 +1,18 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import Logo from './Logo.vue';
 import { useUserData } from '@/composable/useUserData';
 import { useRouter } from 'vue-router';
 const router = useRouter();
-const { user } =  useUserData();
-
-
+const { user:detail } =  useUserData();
+const user = ref()
+setTimeout(() => {
+    user.value = detail.value    
+},500)
 const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    router.push({name: 'login'})
+    router.resolve({name: 'login'})
 }
 </script>
 <template>
@@ -32,9 +35,9 @@ const logout = () => {
                     </div>
                     <mdicon name="account" v-else />   
                 </div> 
-                <div class="absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded">
+                <div class="absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded hidden group-hover:block">
                     <nav>
-                        <RouterLink to="/admin-panel" class="whitespace-nowrap hover:bg-slate-100 p-2 hidden group-hover:block">Admin Panel</RouterLink>
+                        <RouterLink to="/admin-panel" class="whitespace-nowrap hover:bg-slate-100 p-2 hidden md:block">Admin Panel</RouterLink>
                     </nav>
                 </div>
             </div>
@@ -47,7 +50,7 @@ const logout = () => {
                </div>
             </div>
             <div>
-                <button class="px-3 bg-red-600 hover:bg-red-700 text-white rounded-full py-1" v-if="!user"><RouterLink to="/login" >Login</RouterLink></button>
+                <button class="px-3 bg-red-600 hover:bg-red-700 text-white rounded-full py-1" v-if="!user?.name"><RouterLink to="/login" >Login</RouterLink></button>
                 <button class="px-3 bg-red-600 hover:bg-red-700 text-white rounded-full py-1" v-else  @click="logout">Logout</button>
             </div>
         </div>

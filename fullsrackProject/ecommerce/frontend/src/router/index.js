@@ -33,6 +33,14 @@ const router = createRouter({
           name: 'admin-panel',
           component: () => import('../views/AdminPanel.vue'),
         },
+        {
+          path: '/users',
+          name: 'users',
+          component: () => import('../views/admin/Users.vue'),
+          meta: {
+            isAdmin: true,
+          },
+        },
       ],
     },
   ],
