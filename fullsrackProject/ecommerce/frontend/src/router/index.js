@@ -41,6 +41,14 @@ const router = createRouter({
             isAdmin: true,
           },
         },
+        {
+          path: '/products',
+          name: 'products',
+          component: () => import('../views/admin/Products.vue'),
+          meta: {
+            isAdmin: true,
+          },
+        },
       ],
     },
   ],

@@ -62,7 +62,9 @@
 import { ref , defineProps , defineEmits } from 'vue'
 import common from '@/common/index'
 import axios from 'axios';
+import { useToast } from '@/common/useToast.js'
 const { SummaryApi, authHeaders } = common
+const { toastTypeError, toastTypeSuccess } = useToast()
 const openModal = ref(false)
 const props = defineProps({
     user:Object
@@ -79,6 +81,11 @@ const handleUpdateUser = async () => {
         if (res.status === 200) {
             openModal.value = false
             emit('updateUser')
+            toastTypeSuccess('User updated successfully')
+        }
+    }).catch((err) => {
+        if (err.response) {
+            toastTypeError(err.response.data.message)
         }
     })
 }

@@ -35,7 +35,7 @@ const getTableData = () => {
 }
 </script>
 <template>
-   <h1 class="text-2xl font-semibold leading-tight ml-3">Users</h1>
+   <h1 class="text-2xl font-medium leading-tight ml-3">Users</h1>
 
    <div class="bg-white rounded-lg m-3 p-3 shadow-md">
       <div class="inline-block min-w-full  rounded-lg overflow-hidden">
@@ -55,11 +55,6 @@ const getTableData = () => {
                      </svg>
                   </div>
                </div>
-            </div>
-            <div>
-               <button class="bg-red-600 text-white px-6 py-2 rounded-full me-2 flex">
-                  <mdicon name="plus" />Create
-               </button>
             </div>
          </div>
 

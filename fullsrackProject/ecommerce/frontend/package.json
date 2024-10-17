@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
+    "@vueuse/core": "^11.1.0",
     "axios": "^1.7.7",
     "jsonwebtoken": "^9.0.2",
     "mdi-vue": "^3.0.13",

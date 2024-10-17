@@ -20,7 +20,7 @@ const { user } =  useUserData();
             <div>
                 <nav class="grid p-4">
                     <RouterLink :to="{name:'users'}" class="whitespace-nowrap hover:bg-slate-100 p-2">Users</RouterLink> 
-                    <RouterLink to="" class="whitespace-nowrap hover:bg-slate-100 p-2">Products</RouterLink>
+                    <RouterLink :to="{name:'products'}" class="whitespace-nowrap hover:bg-slate-100 p-2">Products</RouterLink>
                 </nav>
             </div>
         </aside>

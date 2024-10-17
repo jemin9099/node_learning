@@ -16,6 +16,9 @@ const SummaryApi = {
         url:(id) => {
             return `${backendDomain}/api/update-user/${id}`
         },
+    },
+    createProduct:{
+        url:`${backendDomain}/api/product/create`,
     }
 }
 const headers = {
@@ -23,4 +26,5 @@ const headers = {
     'Accept': 'application/json'
 }
 const authHeaders = { 'Authorization': `JWT ${localStorage.getItem('token')}` }
-export default {SummaryApi,headers, authHeaders}
+const formDataHeader = { 'Content-Type': 'multipart/form-data', 'Authorization': `JWT ${localStorage.getItem('token')}`}
+export default {SummaryApi,headers, authHeaders,formDataHeader}

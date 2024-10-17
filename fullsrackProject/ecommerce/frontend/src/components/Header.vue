@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import Logo from './Logo.vue';
 import { useUserData } from '@/composable/useUserData';
 import { useRouter } from 'vue-router';
+import role from '@/common/role';
 const router = useRouter();
 const { user:detail } =  useUserData();
 const user = ref()
@@ -12,7 +13,7 @@ setTimeout(() => {
 const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    router.resolve({name: 'login'})
+    router.push({name: 'login'})
 }
 </script>
 <template>
@@ -37,7 +38,7 @@ const logout = () => {
                 </div> 
                 <div class="absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded hidden group-hover:block">
                     <nav>
-                        <RouterLink to="/admin-panel" class="whitespace-nowrap hover:bg-slate-100 p-2 hidden md:block">Admin Panel</RouterLink>
+                        <RouterLink to="/admin-panel" class="whitespace-nowrap hover:bg-slate-100 p-2 hidden md:block" v-if="user?.role === role.ADMIN">Admin Panel</RouterLink>
                     </nav>
                 </div>
             </div>
