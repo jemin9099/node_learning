@@ -8,6 +8,7 @@ const productCategory = [
     {id:7 , label:'Processor' , value:'processor'},
     {id:8 , label:'Refrigerator' , value:'refrigerator'},
     {id:9 , label:'Speakers' , value:'speakers'},
-]
+    {id:10 , label:'TV' , value:'TV'},
+]                           
 
 export default productCategory

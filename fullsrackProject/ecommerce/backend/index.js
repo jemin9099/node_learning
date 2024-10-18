@@ -3,13 +3,13 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const router = require('./routes/index')
 require('dotenv').config()
+const connectDB = require('./config/db')
 const app = express()
+app.use('/uploads', express.static('uploads')); 
 app.use(express.json())
 app.use(express.urlencoded({extends:true}))
-app.use('/uploads', express.static('uploads')); 
-const connectDB = require('./config/db')
-app.use(cookieParser())
 app.use(cors())
+app.use(cookieParser())
 app.use('/api',router)
 const Port = process.env.PORT
 connectDB().then(() =>{

@@ -2,7 +2,7 @@
     <label class="uppercase tracking-wide text-black text-xs font-bold mb-2" for="title">
         Upload Image*
     </label>
-    <div class="border p-5 rounded-lg cursor-pointer" ref="dropZoneRef" @click="open()">
+    <div class="border p-5 rounded-lg cursor-pointer" :class="filesData.length > 0 && 'h-[200px] overflow-auto'" ref="dropZoneRef" @click="open()">
         <div class="flex items-center justify-center gap-3" v-if="filesData.length === 0">
             <mdicon name="tray-arrow-up" class="text-red-700 bg-red-200 p-2 rounded-md" />
             <div>
@@ -70,8 +70,10 @@ onChange(selectedFiles => {
 useDropZone(dropZoneRef, onDrop)
 
 const getFilesData = () => filesData.value.map(f => f.file)
-
-defineExpose({ getFilesData })
+const removeAllFiles = () => {
+    filesData.value = []
+}
+defineExpose({ getFilesData , removeAllFiles })
 </script>
 
 <style lang="scss" scoped></style>

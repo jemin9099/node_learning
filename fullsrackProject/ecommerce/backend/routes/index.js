@@ -24,4 +24,8 @@ router.post(
   product().upload.array("image", 10),
   product().createProduct
 );
+
+router.get("/products", authToken, product().getAllProduct);
+router.put("/product/update/:id", authToken,product().upload.array("image", 10), product().updateProduct);
+router.delete("/product/delete/:id", authToken, product().deleteProduct);
 module.exports = router;

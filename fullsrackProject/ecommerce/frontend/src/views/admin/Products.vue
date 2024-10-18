@@ -5,19 +5,21 @@ import addProductModel from '@/components/addProductModel.vue';
 import updateUserRole from '@/components/updateUserRole.vue'
 import { ref, watch } from 'vue'
 import common from '@/common/index'
+import { useToast } from '@/common/useToast.js'
 const { SummaryApi, authHeaders } = common
-
-const users = ref([])
+const { toastTypeError, toastTypeSuccess } = useToast()
+const Products = ref([])
 const isOpen = ref(false)
 const currentPage = ref(1)
 const parPage = ref(10)
 const totalPage = ref()
+const addAndUpdate = ref()
 const search = ref('')
 const getAllUsers = async (search) => {
     try {
-        const { data, status } = await axios.get(SummaryApi.allusers.url, { headers: authHeaders, params: { name: search } })
+        const { data, status } = await axios.get(SummaryApi.getAllProduct.url, { headers: authHeaders, params: { name: search } })
         if (status === 200) {
-            users.value = data.data
+            Products.value = data.data
             totalPage.value = Math.ceil(data.data.length / parPage.value)
         }
     }
@@ -33,11 +35,24 @@ const getTableData = () => {
     const startIndex = (currentPage.value - 1) * parPage.value
     const endIndex = currentPage.value * parPage.value
 
-    return users.value?.slice(startIndex, endIndex)
+    return Products.value?.slice(startIndex, endIndex)
+}
+
+const deleteProduct = async (product) => {
+    try {
+        const { status } = await axios.delete(SummaryApi.deleteProduct.url(product._id), { headers: authHeaders })
+        if (status === 200) {
+            getAllUsers()
+            toastTypeSuccess('Product deleted successfully')
+        }
+    }
+    catch (error) {
+        toastTypeError(error.response.data.message)
+    }
 }
 </script>
 <template>
-    <addProductModel title="Add Product" :isOpen="isOpen" @close="isOpen = false" />
+    <addProductModel ref="addAndUpdate" title="Add Product" :isOpen="isOpen" @close="isOpen = false"   @refresh="getAllUsers()"/>
     <h1 class="text-2xl font-medium leading-tight ml-3">Products</h1>
     <div class="bg-white rounded-lg m-3 p-3 shadow-md">
         <div class="inline-block min-w-full  rounded-lg overflow-hidden">
@@ -73,70 +88,97 @@ const getTableData = () => {
                     <thead>
                         <tr>
                             <th
-                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 NO
                             </th>
                             <th
-                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Name
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Image
                             </th>
                             <th
-                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Email
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Product Name
                             </th>
                             <th
-                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Role
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Brand Name
                             </th>
                             <th
-                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Category
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Price
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Selling Price
+                            </th>
+                            <th
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Created at
                             </th>
                             <th
-                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(user, index) in getTableData()" :key="index">
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <tr v-for="(product, index) in getTableData()" :key="index">
+                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                 {{ index + 1 }}
                             </td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 w-10 h-10">
-                                        <img class="w-full h-full rounded-full" :src="user.image" alt="" />
+                            <td class="px-5 py-5 border-b border-gray-200  bg-white text-sm">
+                                <div class="flex items-center justify-center">
+                                    <div class="flex-shrink-0  h-10">
+                                        <img class=" h-[40px]" :src="product.image[0]" alt="" />
                                     </div>
+                                </div>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200  bg-white text-sm">
+                                <div class="flex items-center justify-center">
                                     <div class="ml-3">
                                         <p class="text-gray-900 whitespace-no-wrap">
-                                            {{ user.name }}
+                                            {{ product.productName }}
                                         </p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                 <p class="text-gray-900 whitespace-no-wrap">
-                                    {{ user.email }}
+                                    {{ product.brandName }}
                                 </p>
                             </td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                 <p class="text-gray-900 whitespace-no-wrap">
-                                    {{ user.role }}
+                                    {{ product.category }}
                                 </p>
                             </td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                 <p class="text-gray-900 whitespace-no-wrap">
-                                    {{ moment(user.createdAt).format('LL') }}
+                                    {{ product.price }}
                                 </p>
                             </td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                <p class="text-gray-900 whitespace-no-wrap flex gap-3">
+                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">
+                                    {{ product.sellingPrice }}
+                                </p>
+                            </td>
+                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">
+                                    {{ moment(product.createdAt).format('LL') }} 
+                                </p>
+                            </td>
+                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap justify-center flex gap-3">
                                     <span>
-                                        <updateUserRole :user="user" @update-user="getAllUsers()" />
+                                        <!-- <updateUserRole :user="user" @update-user="getAllUsers()" /> -->
+                                        <mdicon name="pencil-outline" class=" cursor-pointer" @click="isOpen= true , addAndUpdate.open(product)" />
                                     </span>
                                     <span>
-                                        <mdicon name="delete-outline" class="text-red-500 cursor-pointer" />
+                                        <mdicon name="delete-outline" class="text-red-500 cursor-pointer" @click="deleteProduct(product)"/>
                                     </span>
 
                                 </p>
@@ -151,7 +193,7 @@ const getTableData = () => {
                         <li class="pagination-item">
                             <span v-if="currentPage === 1"
                                 class="rounded-l rounded-sm border border-gray-100 px-3 py-2 cursor-not-allowed no-underline text-gray-600 h-10">&laquo;</span>
-                            <a @click.prevent="onClickFirstPage"
+                            <a @click.prevent="currentPage = 1"
                                 class="rounded-l rounded-sm border-t border-b border-l border-gray-100 px-3 py-2 text-gray-600 hover:bg-gray-100 no-underline"
                                 href="#" role="button" rel="prev" v-else>
                                 &laquo;
@@ -159,7 +201,7 @@ const getTableData = () => {
                         </li>
 
                         <li class="pagination-item">
-                            <button type="button" @click="onClickPreviousPage" :disabled="currentPage === 1"
+                            <button type="button" @click="currentPage--" :disabled="currentPage === 1"
                                 aria-label="Go to previous page"
                                 class="rounded-sm border border-gray-100 px-3 py-2 hover:bg-gray-100 text-gray-600 no-underline mx-2 text-sm"
                                 :class="{ 'cursor-not-allowed': currentPage === 1 }">Previous</button>
@@ -174,7 +216,7 @@ const getTableData = () => {
                         </li>
 
                         <li class="pagination-item">
-                            <button type="button" @click="onClickNextPage" :disabled="currentPage === totalPage"
+                            <button type="button" @click="currentPage++" :disabled="currentPage === totalPage"
                                 aria-label="Go to next page"
                                 class="rounded-sm border border-gray-100 px-3 py-2 hover:bg-gray-100 text-gray-600 no-underline mx-2 text-sm"
                                 :class="{ 'cursor-not-allowed': currentPage === totalPage }">Next</button>
@@ -182,7 +224,7 @@ const getTableData = () => {
 
                         <li class="pagination-item">
                             <a class="rounded-r rounded-sm border border-gray-100 px-3 py-2 hover:bg-gray-100 text-gray-600 no-underline"
-                                href="#" @click.prevent="onClickLastPage" rel="next" role="button"
+                                href="#" @click.prevent="currentPage = totalPage" rel="next" role="button"
                                 v-if="currentPage !== totalPage">&raquo;</a>
                             <span
                                 class="rounded-r rounded-sm border border-gray-100 px-3 py-2 hover:bg-gray-100 text-gray-600 no-underline cursor-not-allowed"

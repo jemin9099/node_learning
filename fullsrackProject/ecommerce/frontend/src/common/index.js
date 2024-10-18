@@ -19,12 +19,25 @@ const SummaryApi = {
     },
     createProduct:{
         url:`${backendDomain}/api/product/create`,
-    }
+    },
+    getAllProduct:{
+        url:`${backendDomain}/api/products`,
+    },
+    updateProduct:{
+        url:(id) => {
+            return `${backendDomain}/api/product/update/${id}`
+        },
+    },
+    deleteProduct:{
+        url:(id) => {
+            return `${backendDomain}/api/product/delete/${id}`
+        },
+    },
 }
 const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
 const authHeaders = { 'Authorization': `JWT ${localStorage.getItem('token')}` }
-const formDataHeader = { 'Content-Type': 'multipart/form-data', 'Authorization': `JWT ${localStorage.getItem('token')}`}
+const formDataHeader = {  'Authorization': `JWT ${localStorage.getItem('token')}`}
 export default {SummaryApi,headers, authHeaders,formDataHeader}

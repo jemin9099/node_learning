@@ -17,10 +17,11 @@ const { user } =  useUserData();
                 <p class="mt-1 capitalize text-lg font-semibold">{{user?.name}}</p>
                 <p class="text-sm">{{user?.role}}</p>
             </div>
+            <hr>
             <div>
-                <nav class="grid p-4">
-                    <RouterLink :to="{name:'users'}" class="whitespace-nowrap hover:bg-slate-100 p-2">Users</RouterLink> 
-                    <RouterLink :to="{name:'products'}" class="whitespace-nowrap hover:bg-slate-100 p-2">Products</RouterLink>
+                <nav class="grid p-4 gap-2">
+                    <RouterLink :to="{name:'users'}" class="whitespace-nowrap hover:bg-slate-100 p-2 flex" :class="{ 'bg-slate-100': $route.name === 'users' }"><mdicon name="account-multiple" class="me-2"></mdicon> Users</RouterLink> 
+                    <RouterLink :to="{name:'products'}" class="whitespace-nowrap  hover:bg-slate-100 p-2 flex" :class="{ 'bg-slate-200': $route.name === 'products' }"><mdicon name="store" class="me-2"></mdicon> Products</RouterLink>
                 </nav>
             </div>
         </aside>

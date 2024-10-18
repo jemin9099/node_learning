@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, computed } from 'vue'
+import { ref, defineProps, computed, defineEmits, defineExpose } from 'vue'
 import productCategory from '@/common/productCategory.js'
 import dropzone from '@/components/dropzone.vue'
 import common from '@/common/index'
@@ -11,7 +11,9 @@ const props = defineProps({
 })
 const { SummaryApi, formDataHeader } = common
 const { toastTypeError, toastTypeSuccess } = useToast()
+const emit = defineEmits(['close', 'refresh'])
 const dropzoneRef = ref()
+const isUpdate = ref(false)
 // const formData = ref(new FormData())
 const inputData = ref({
   productName: '',
@@ -42,7 +44,7 @@ const sellingPriceError = computed(() => {
 const isFormValid = computed(() => {
   return !productNameError.value && !descriptionError.value && !brandNameError.value && !categoryError.value && !priceError.value && !sellingPriceError.value
 })
-const handleSubmit = async() => {
+const handleSubmit = async () => {
   const formData = new FormData()
   if (isFormValid.value) {
     formData.append('productName', inputData.value.productName)
@@ -51,19 +53,71 @@ const handleSubmit = async() => {
     formData.append('category', inputData.value.category)
     formData.append('price', inputData.value.price)
     formData.append('sellingPrice', inputData.value.sellingPrice)
-    if (dropzoneRef.value.getFilesData() && dropzoneRef.value.getFilesData().length > 0) {
-      for (const file of dropzoneRef.value.getFilesData()) {
-        // let formdata1 = new FormData()
-        formData.append('image', file)
+    if (!isUpdate.value) {
+      if (dropzoneRef.value.getFilesData() && dropzoneRef.value.getFilesData().length > 0) {
+        for (const file of dropzoneRef.value.getFilesData()) {
+          // let formdata1 = new FormData()
+          formData.append('image', file)
+        }
+        try {
+          let { data, status } = await axios.post(SummaryApi.createProduct.url, formData, { headers: formDataHeader })
+          if (status === 201) {
+            emit('refresh')
+            emit('close')
+            toastTypeSuccess(data.message)
+            inputData.value = {
+              productName: '',
+              description: '',
+              brandName: '',
+              category: '',
+              price: '',
+              sellingPrice: ''
+            }
+            dropzoneRef.value.removeAllFiles()
+          }
+        }
+        catch (error) {
+          toastTypeError(error.response.data.message)
+        }
       }
-      let {data} = await axios.post(SummaryApi.createProduct.url, formData, {headers: formDataHeader})
+    } else {
+      try {
+        let { data, status } = await axios.put(SummaryApi.updateProduct.url(inputData.value._id), formData, { headers: formDataHeader })
+        if (status === 200) {
+          emit('refresh')
+          emit('close')
+          toastTypeSuccess(data.message)
+          inputData.value = {
+            productName: '',
+            description: '',
+            brandName: '',
+            category: '',
+            price: '',
+            sellingPrice: ''
+          }
+
+        }
+      }
+      catch (error) {
+        toastTypeError(error.response.data.message)
+      } 
     }
   }
 }
+
+const open = (product) => {
+  isUpdate.value = product ? true : false
+  if (product) {
+    Object.keys(product).forEach(key => {
+      inputData.value[key] = product[key]
+    })
+  }
+}
+defineExpose({ open })
 </script>
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-10 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white rounded-lg shadow-lg p-6 max-w-6xl w-full">
+  <div v-if="isOpen" class="fixed inset-0 z-10 bg-black bg-opacity-50 flex items-center justify-center overflow-auto ">
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-6xl w-full h-100 overflow-auto">
       <h2 class="text-xl font-midium mb-4 text-center">{{ title }}</h2>
       <hr>
       <div class="mt-3">
@@ -151,10 +205,11 @@ const handleSubmit = async() => {
             </div>
           </div>
         </div>
-        <dropzone ref="dropzoneRef" />
+        <dropzone ref="dropzoneRef" v-if="!isUpdate" />
       </div>
       <div class="mt-4 flex justify-end">
-        <button @click="$emit('close')" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 me-2">
+        <button @click="$emit('close'), isUpdate = false"
+          class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 me-2">
           Close
         </button>
         <button @click="handleSubmit()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
