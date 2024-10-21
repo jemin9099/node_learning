@@ -33,6 +33,22 @@ const SummaryApi = {
             return `${backendDomain}/api/product/delete/${id}`
         },
     },
+    category:{
+        url:`${backendDomain}/api/category/create`,
+    },
+    getCategory:{
+        url:`${backendDomain}/api/category`,
+    },
+    updateCategory:{
+        url:(id) => {
+            return `${backendDomain}/api/category/update/${id}`
+        },
+    },
+    deleteCategory:{
+        url:(id) => {
+            return `${backendDomain}/api/category/delete/${id}`
+        },
+    },
 }
 const headers = {
     'Content-Type': 'application/json',

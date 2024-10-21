@@ -1,6 +1,5 @@
 <script setup>
 import { useUserData } from '@/composable/useUserData';
-import { RouterView } from 'vue-router';
 const { user } =  useUserData();
 </script>
 <template>
@@ -22,6 +21,7 @@ const { user } =  useUserData();
                 <nav class="grid p-4 gap-2">
                     <RouterLink :to="{name:'users'}" class="whitespace-nowrap hover:bg-slate-100 p-2 flex" :class="{ 'bg-slate-100': $route.name === 'users' }"><mdicon name="account-multiple" class="me-2"></mdicon> Users</RouterLink> 
                     <RouterLink :to="{name:'products'}" class="whitespace-nowrap  hover:bg-slate-100 p-2 flex" :class="{ 'bg-slate-200': $route.name === 'products' }"><mdicon name="store" class="me-2"></mdicon> Products</RouterLink>
+                    <RouterLink :to="{name:'category'}" class="whitespace-nowrap  hover:bg-slate-100 p-2 flex" :class="{ 'bg-slate-200': $route.name === 'category' }"><mdicon name="shape" class="me-2"></mdicon> Category</RouterLink>
                 </nav>
             </div>
         </aside>

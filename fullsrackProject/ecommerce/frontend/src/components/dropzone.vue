@@ -16,7 +16,7 @@
             <div class="flex items-center justify-between gap-3 py-4 px-5 border rounded-lg mb-3"
                 v-for="(file, index) in filesData" :key="index">
                 <div class="flex items-center gap-3">
-                    <img :src="file.url" width="50" height="50" class="rounded-full" alt="">
+                    <img :src="file.url" width="50" height="50" class="rounded-full h-30" alt="">
                     <div>
                         <h6 class="text-md font-medium">
                             {{ file.file.name }}

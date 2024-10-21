@@ -3,8 +3,7 @@ import { RouterView , useRoute } from 'vue-router'
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 import AdminPanel from './views/AdminPanel.vue';
-const route = useRoute( )
-console.log(route.path);
+const route = useRoute()
 
 </script>
 <template>

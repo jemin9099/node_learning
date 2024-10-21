@@ -1,24 +1,24 @@
 <script setup>
+import { ref , watch } from 'vue';
 import moment from 'moment';
 import axios from 'axios'
-import addProductModel from '@/components/addProductModel.vue';
-import { ref, watch } from 'vue'
+import createOrUpdateCategoryModel from '@/components/createOrUpdateCategoryModel.vue';
 import common from '@/common/index'
 import { useToast } from '@/common/useToast.js'
 const { SummaryApi, authHeaders } = common
 const { toastTypeError, toastTypeSuccess } = useToast()
-const Products = ref([])
+const categories = ref([])
 const isOpen = ref(false)
 const currentPage = ref(1)
 const parPage = ref(10)
 const totalPage = ref()
 const addAndUpdate = ref()
 const search = ref('')
-const getAllUsers = async (search) => {
+const getAllCategories = async (search) => {
     try {
-        const { data, status } = await axios.get(SummaryApi.getAllProduct.url, { headers: authHeaders, params: { search: search } })
+        const { data, status } = await axios.get(SummaryApi.getCategory.url, { headers: authHeaders, params: { search: search } })
         if (status === 200) {
-            Products.value = data.data
+            categories.value = data.data
             totalPage.value = Math.ceil(data.data.length / parPage.value)
         }
     }
@@ -26,37 +26,51 @@ const getAllUsers = async (search) => {
         console.log(error);
     }
 }
-getAllUsers()
+getAllCategories()
 watch(() => search.value, () => {
-    getAllUsers(search.value)
+    getAllCategories(search.value)
 })
-const getTableData = () => {
-    const startIndex = (currentPage.value - 1) * parPage.value
-    const endIndex = currentPage.value * parPage.value
 
-    return Products.value?.slice(startIndex, endIndex)
+const updateStatus = (category , status) => {
+   category.status = status
+   updateCategory(category)    
 }
 
-const deleteProduct = async (product) => {
+const updateCategory = async (category) => {
     try {
-        const { status } = await axios.delete(SummaryApi.deleteProduct.url(product._id), { headers: authHeaders })
+        const { data, status } = await axios.put(SummaryApi.updateCategory.url(category._id) , category, { headers: authHeaders })
         if (status === 200) {
-            getAllUsers()
-            toastTypeSuccess('Product deleted successfully')
+            toastTypeSuccess(data.message)
+            getAllCategories()
         }
     }
     catch (error) {
         toastTypeError(error.response.data.message)
     }
 }
+const getTableData = () => {
+    const startIndex = (currentPage.value - 1) * parPage.value
+    const endIndex = currentPage.value * parPage.value
 
-const displayCurrency = (price) => {
-    return price.toLocaleString('en-US', { style: 'currency', currency: 'INR' , minimumFractionDigits: 2})
+    return categories.value?.slice(startIndex, endIndex)
+}
+
+const deleteCategory = async (category) => {
+    try {
+        const { data, status } = await axios.delete(SummaryApi.deleteCategory.url(category._id) , { headers: authHeaders })
+        if (status === 200) {
+            toastTypeSuccess(data.message)
+            getAllCategories()
+        }
+    }
+    catch (error) {
+        toastTypeError(error.response.data.message)
+    }
 }
 </script>
 <template>
-    <addProductModel ref="addAndUpdate" title="Add Product" :isOpen="isOpen" @close="isOpen = false"   @refresh="getAllUsers()"/>
-    <h1 class="text-2xl font-medium leading-tight ml-3">Products</h1>
+    <createOrUpdateCategoryModel ref="addAndUpdate" title="Add Category" :isOpen="isOpen" @close="isOpen = false" @refresh="getAllCategories()"/>
+    <h1 class="text-2xl font-medium leading-tight ml-3">Category</h1>
     <div class="bg-white rounded-lg m-3 p-3 shadow-md">
         <div class="inline-block min-w-full  rounded-lg overflow-hidden">
             <div class="mb-4 flex justify-between items-center">
@@ -81,11 +95,10 @@ const displayCurrency = (price) => {
                         class="border-2 border-red-600  hover:bg-red-600 text-red-600 hover:text-white font-bold py-2 px-4 rounded flex me-3"
                         @click="isOpen = true">
                         <mdicon name="plus" />
-                        <span class="ml-2">Add Product</span>
+                        <span class="ml-2">Add Category</span>
                     </button>
                 </div>
             </div>
-
             <div class="shadow">
                 <table class="min-w-full leading-normal">
                     <thead>
@@ -100,23 +113,11 @@ const displayCurrency = (price) => {
                             </th>
                             <th
                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Product Name
+                                Category Name
                             </th>
                             <th
                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Brand Name
-                            </th>
-                            <th
-                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Category
-                            </th>
-                            <th
-                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Price
-                            </th>
-                            <th
-                                class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Selling Price
+                                Status
                             </th>
                             <th
                                 class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -129,14 +130,14 @@ const displayCurrency = (price) => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(product, index) in getTableData()" :key="index">
+                        <tr v-for="(category, index) in getTableData()" :key="index">
                             <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                 {{ index + 1 }}
                             </td>
                             <td class="px-5 py-5 border-b border-gray-200  bg-white text-sm">
                                 <div class="flex items-center justify-center">
                                     <div class="flex-shrink-0  h-10">
-                                        <img class=" h-[40px]" :src="product.image[0]" alt="" />
+                                        <img class=" h-[40px]" :src="category.image[0]" alt="" />
                                     </div>
                                 </div>
                             </td>
@@ -144,45 +145,37 @@ const displayCurrency = (price) => {
                                 <div class="flex items-center justify-center">
                                     <div class="ml-3">
                                         <p class="text-gray-900 whitespace-no-wrap">
-                                            {{ product._doc.productName }}
+                                            {{ category._doc.name }}
                                         </p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                 <p class="text-gray-900 whitespace-no-wrap">
-                                    {{ product._doc.brandName }}
+                                    <label for="toggleB"
+                                    class="flex items-center justify-center cursor-pointer uppercase px-3 tracking-wide  text-xs  mb-2">
+                                   
+                                    <div class="relative">
+                                        <input type="checkbox" id="toggleB" class="sr-only" :checked="category._doc.status" @input="updateStatus(category._doc, $event.target.checked)">
+                                        <div class="block bg-red-600 w-14 h-8 rounded-full"></div>
+                                        <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                                    </div>
+                                </label>
                                 </p>
                             </td>
                             <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                 <p class="text-gray-900 whitespace-no-wrap">
-                                    {{ product._doc.category }}
-                                </p>
-                            </td>
-                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
-                                <p class="text-gray-900 whitespace-no-wrap">
-                                    {{ displayCurrency(product._doc.price) }}
-                                </p>
-                            </td>
-                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
-                                <p class="text-gray-900 whitespace-no-wrap">
-                                    {{ displayCurrency(product._doc.sellingPrice) }}
-                                </p>
-                            </td>
-                            <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
-                                <p class="text-gray-900 whitespace-no-wrap">
-                                    {{ moment(product._doc.createdAt).format('LL') }} 
+                                    {{ moment(category._doc.createdAt).format('LL') }} 
                                 </p>
                             </td>
                             <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                 <p class="text-gray-900 whitespace-no-wrap justify-center flex gap-3">
                                     <span>      
-                                        <mdicon name="pencil-outline" class=" cursor-pointer" @click="isOpen= true , addAndUpdate.open(product._doc)" />
+                                        <mdicon name="pencil-outline" class=" cursor-pointer" @click="isOpen= true , addAndUpdate.open(category._doc)" />
                                     </span>
                                     <span>
-                                        <mdicon name="delete-outline" class="text-red-500 cursor-pointer" @click="deleteProduct(product._doc)"/>
+                                        <mdicon name="delete-outline" class="text-red-500 cursor-pointer" @click="deleteCategory(category._doc)"/>
                                     </span>
-
                                 </p>
                             </td>
                         </tr>
@@ -238,4 +231,10 @@ const displayCurrency = (price) => {
         </div>
     </div>
 </template>
-<style scoped></style>
+
+<style  scoped>
+input:checked~.dot {
+    transform: translateX(100%);
+    background-color: white;
+}
+</style>

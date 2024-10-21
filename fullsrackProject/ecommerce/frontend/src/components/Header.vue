@@ -22,12 +22,12 @@ const logout = () => {
         <RouterLink to="/">
             <Logo/>
         </RouterLink>
-        <div class="hidden lg:flex items-center justify-between max-w-sm border rounded-full focus-within:shadow-md pl-2">
-            <input type="text" placeholder="Search Product here.." class="w-full outline-none ">
-            <div class="min-w-[50px] h-8 flex items-center justify-center bg-red-600 rounded-r-full text-white">
-                <mdicon name="magnify" />
-            </div>
-        </div>
+        <div class="border rounded overflow-hidden flex">
+            <input type="text" class="px-4 py-2" placeholder="Search...">
+            <button class="flex items-center justify-center px-4 border-l">
+              <svg class="h-4 w-4 text-grey-dark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"/></svg>
+            </button>
+          </div>
         <div class="flex items-center gap-7">
             <div class="releative group flex justify-center">
                 <div class="cursor-pointer ">
@@ -51,8 +51,8 @@ const logout = () => {
                </div>
             </div>
             <div>
-                <button class="px-3 bg-red-600 hover:bg-red-700 text-white rounded-full py-1" v-if="!user?.name"><RouterLink to="/login" >Login</RouterLink></button>
-                <button class="px-3 bg-red-600 hover:bg-red-700 text-white rounded-full py-1" v-else  @click="logout">Logout</button>
+                <button class="border-2 border-red-600  hover:bg-red-600 text-red-600 hover:text-white font-bold py-1 px-4 rounded flex me-3" v-if="!user?.name"><RouterLink to="/login" >Login</RouterLink></button>
+                <button class="border-2 border-red-600  hover:bg-red-600 text-red-600 hover:text-white font-bold py-1 px-4 rounded flex me-3" v-else  @click="logout">Logout</button>
             </div>
         </div>
     </div>

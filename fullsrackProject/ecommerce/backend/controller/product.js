@@ -8,7 +8,7 @@ const Product = () => {
     try {
       let productData = req.body;
       productData.image = req.files.map(
-        (file) => `${process.env.backendURl}/${file.path}`
+        (file) => `${file.path}`
       );
       const product = new productModel(productData);
       const result = await product.save();
@@ -44,14 +44,30 @@ const Product = () => {
   // get all Product
   const getAllProduct = async (req, res) => {
     try {
-      const products = await productModel.find({});
+      const products = await productModel.find({}).sort({ createdAt: -1 });
+      let filteredProducts = []
+      if (req.query.search) {
+         filteredProducts = products.filter(product => 
+          product.productName.toLowerCase().includes(req.query.search.toLowerCase()) ||
+          product.brandName.toLowerCase().includes(req.query.search.toLowerCase()) ||
+          product.category.toLowerCase().includes(req.query.search.toLowerCase())
+        )
+      }
+      else{
+        filteredProducts = products
+      }
+      
+      const allProducts = filteredProducts.map((product) => ({
+          ...product,
+          image:  product.image.map((image) => `${process.env.BACKEND_URL}/${image}`),
+      }))
       res
         .status(200)
         .json({
           message: "Products fetched successfully",
           error: false,
           success: true,
-          data: products,
+          data: allProducts,
         });
     } catch (err) {
       res.status(400).json({
@@ -101,7 +117,7 @@ const Product = () => {
       // delete image from server
       if (existingProduct.image && existingProduct.image.length > 0) {
         existingProduct.image.forEach((image) => {
-          const imagePath = path.join(__dirname, "uploads", image); // Adjust this path
+          const imagePath = path.join(__dirname, "..", image); // Adjust this path       
           fs.unlink(imagePath, (err) => {
             if (err) {
               throw new Error(err)
