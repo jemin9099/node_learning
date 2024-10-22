@@ -2,7 +2,7 @@
 import moment from 'moment';
 import axios from 'axios'
 import addProductModel from '@/components/addProductModel.vue';
-import { ref, watch } from 'vue'
+import { ref, watch , onMounted } from 'vue'
 import common from '@/common/index'
 import { useToast } from '@/common/useToast.js'
 const { SummaryApi, authHeaders } = common
@@ -14,6 +14,7 @@ const parPage = ref(10)
 const totalPage = ref()
 const addAndUpdate = ref()
 const search = ref('')
+const categoryList = ref()
 const getAllUsers = async (search) => {
     try {
         const { data, status } = await axios.get(SummaryApi.getAllProduct.url, { headers: authHeaders, params: { search: search } })
@@ -53,6 +54,26 @@ const deleteProduct = async (product) => {
 const displayCurrency = (price) => {
     return price.toLocaleString('en-US', { style: 'currency', currency: 'INR' , minimumFractionDigits: 2})
 }
+const getCategory = async () => {
+  try {
+    let { data, status } = await axios.get(SummaryApi.getCategory.url ,{ headers: authHeaders })
+    if (status === 200) {
+      categoryList.value = data.data      
+    }
+  }
+  catch (error) {
+    toastTypeError(error.response.data.message)
+  }
+}
+const getCategoryName = (id) => {
+  const category = categoryList.value?.find((category) => category._doc._id === id)
+  if (category) {
+    return category._doc.name
+  }
+}
+onMounted(() => {
+    getCategory()
+})
 </script>
 <template>
     <addProductModel ref="addAndUpdate" title="Add Product" :isOpen="isOpen" @close="isOpen = false"   @refresh="getAllUsers()"/>
@@ -156,7 +177,7 @@ const displayCurrency = (price) => {
                             </td>
                             <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
                                 <p class="text-gray-900 whitespace-no-wrap">
-                                    {{ product._doc.category }}
+                                    {{  getCategoryName(product._doc.category) }}
                                 </p>
                             </td>
                             <td class="px-5 py-5 border-b text-center border-gray-200 bg-white text-sm">
@@ -208,15 +229,21 @@ const displayCurrency = (price) => {
                                 class="rounded-sm border border-gray-100 px-3 py-2 hover:bg-gray-100 text-gray-600 no-underline mx-2 text-sm"
                                 :class="{ 'cursor-not-allowed': currentPage === 1 }">Previous</button>
                         </li>
-
-                        <li v-for="page in totalPage" class="pagination-item" :key="page.name">
+                        <li v-if="currentPage > 1" class="pagination-item" @click="currentPage = (currentPage -1)" >
+                            <span
+                                class="rounded-sm border border-gray-100 px-3 py-2 hover:bg-gray-100 text-gray-600 no-underline mx-2 cursor-pointer"
+                                >{{ currentPage -1 }}</span>
+                        </li>
+                        <li class="pagination-item"  >
                             <span
                                 class="rounded-sm border border-blue-100 px-3 py-2 bg-blue-100 no-underline text-blue-500 cursor-not-allowed mx-2"
-                                v-if="currentPage === page">{{ page }}</span>
-                            <a class="rounded-sm border border-gray-100 px-3 py-2 hover:bg-gray-100 text-gray-600 no-underline mx-2"
-                                href="#" v-else @click.prevent="currentPage = page" role="button">{{ page }}</a>
+                                >{{ currentPage  }}</span>
                         </li>
-
+                        <li  v-if="currentPage < totalPage" class="pagination-item" @click="currentPage = (currentPage + 1)" >
+                            <span
+                                class="rounded-sm border border-gray-100 px-3 py-2 hover:bg-gray-100 text-gray-600 no-underline mx-2 cursor-pointer"
+                                >{{ currentPage +1 }}</span>
+                        </li>
                         <li class="pagination-item">
                             <button type="button" @click="currentPage++" :disabled="currentPage === totalPage"
                                 aria-label="Go to next page"

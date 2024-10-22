@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, computed, defineEmits, defineExpose } from 'vue'
+import { ref, defineProps, computed, defineEmits, defineExpose, onMounted } from 'vue'
 import productCategory from '@/common/productCategory.js'
 import dropzone from '@/components/dropzone.vue'
 import common from '@/common/index'
@@ -9,12 +9,13 @@ const props = defineProps({
   isOpen: Boolean,
   title: String
 })
-const { SummaryApi, formDataHeader } = common
+const { SummaryApi, formDataHeader, authHeaders } = common
 const { toastTypeError, toastTypeSuccess } = useToast()
 const emit = defineEmits(['close', 'refresh'])
 const dropzoneRef = ref()
+const categoryDropdown = ref(false)
+const categoryList = ref()
 const isUpdate = ref(false)
-// const formData = ref(new FormData())
 const inputData = ref({
   productName: '',
   description: '',
@@ -50,7 +51,7 @@ const handleSubmit = async () => {
     formData.append('productName', inputData.value.productName)
     formData.append('description', inputData.value.description)
     formData.append('brandName', inputData.value.brandName)
-    formData.append('category', inputData.value.category)
+    formData.append('category', inputData.value.category._doc._id)
     formData.append('price', inputData.value.price)
     formData.append('sellingPrice', inputData.value.sellingPrice)
     if (!isUpdate.value) {
@@ -100,20 +101,38 @@ const handleSubmit = async () => {
       }
       catch (error) {
         toastTypeError(error.response.data.message)
-      } 
+      }
     }
   }
 }
 
+const getCategory = async () => {
+  try {
+    let { data, status } = await axios.get(SummaryApi.getCategory.url, { headers: authHeaders })
+    if (status === 200) {
+      categoryList.value = data.data
+    }
+  }
+  catch (error) {
+    toastTypeError(error.response.data.message)
+  }
+}
 const open = (product) => {
   isUpdate.value = product ? true : false
   if (product) {
     Object.keys(product).forEach(key => {
       inputData.value[key] = product[key]
     })
+    let category = categoryList.value?.find((category) => category._doc._id === inputData.value.category)
+    if (category) {
+      inputData.value.category = category
+    }
   }
 }
 defineExpose({ open })
+onMounted(() => {
+  getCategory()
+})
 </script>
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-10 bg-black bg-opacity-50 flex items-center justify-center overflow-auto ">
@@ -167,16 +186,44 @@ defineExpose({ open })
             <label class="uppercase tracking-wide text-black text-xs font-bold mb-2" for="location">
               Category*
             </label>
-            <div>
-              <select class="w-full bg-gray-200 border border-gray-200 text-black text-xs py-3 px-4 pr-8 mb-3 rounded"
-                v-model="inputData.category" id="location">
-                <option v-for="category in productCategory" :key="category.id" :value="category.value">{{ category.label
-                  }}</option>
-              </select>
-              <div v-if="categoryError">
-                <span class="text-red-500 text-xs italic">
-                  {{ categoryError }}
-                </span>
+            <div class="relative">
+              <span class="inline-block w-full rounded-md shadow-sm">
+                <button x-ref="button" @click="categoryDropdown = !categoryDropdown" type="button"
+                  class="cursor-default relative w-full rounded-md border border-gray-200 bg-gray-200 pl-3 pr-10 py-2 text-left focus:outline-none focus:shadow-outline-blue  transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                  <div class="flex items-center space-x-3">
+                    <img :src="inputData.category?.image[0]" alt="" class="flex-shrink-0 h-6 w-6 rounded-full"
+                      v-if="inputData.category">
+                    <span class="block truncate">{{ inputData.category._doc?.name ? inputData.category._doc.name : 'Select                      Category'}}</span>
+                  </div>
+                  <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <mdicon name="unfold-more-horizontal" class="text-gray-500" />
+                  </span>
+                </button>
+              </span>
+              <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg" v-if="categoryDropdown">
+                <ul
+                  class="max-h-56 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5">
+                  <template v-for="(category, index) in categoryList" :key="index">
+                    <li class="text-gray-900 cursor-default select-none relative py-3 pl-4 pr-4 hover:bg-red-300"
+                      @click="inputData.category = category">
+                      <div class="flex flex-row items-center space-x-3">
+                        <div class="basis-1/4 flex justify-center">
+                          <img :src="category.image[0]" alt="" class="flex-shrink-0 h-[40px] ">
+                        </div>
+                        <span
+                          :class="{ 'font-semibold': inputData.category === category, 'font-normal': !(inputData.category === category) }"
+                          class="font-normal block truncate basis-1/2">
+                          {{ category._doc.name }}
+                        </span>
+                      </div>
+                      <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-red-600"
+                        v-if="inputData.category === category">
+                        <mdicon name="check" />
+                      </span>
+                    </li>
+                    <hr>
+                  </template>
+                </ul>
               </div>
             </div>
           </div>

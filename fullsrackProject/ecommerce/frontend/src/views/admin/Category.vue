@@ -32,6 +32,7 @@ watch(() => search.value, () => {
 })
 
 const updateStatus = (category , status) => {
+    console.log(category);    
    category.status = status
    updateCategory(category)    
 }
@@ -156,7 +157,7 @@ const deleteCategory = async (category) => {
                                     class="flex items-center justify-center cursor-pointer uppercase px-3 tracking-wide  text-xs  mb-2">
                                    
                                     <div class="relative">
-                                        <input type="checkbox" id="toggleB" class="sr-only" :checked="category._doc.status" @input="updateStatus(category._doc, $event.target.checked)">
+                                        <input type="checkbox" id="toggleB" class="sr-only" :checked="category._doc.status" @input.prevent="updateStatus(category._doc, $event.target.checked)">
                                         <div class="block bg-red-600 w-14 h-8 rounded-full"></div>
                                         <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
                                     </div>
