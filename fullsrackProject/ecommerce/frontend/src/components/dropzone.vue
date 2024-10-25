@@ -76,4 +76,4 @@ const removeAllFiles = () => {
 defineExpose({ getFilesData , removeAllFiles })
 </script>
 
-<style lang="scss" scoped></style>
+<style   scoped></style>

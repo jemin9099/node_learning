@@ -57,6 +57,12 @@ const router = createRouter({
             isAdmin: true,
           },
         },
+        {
+          path: '/category/:id',
+          name: 'categoryByProducts',
+          component: () => import('../views/categoryProduct.vue'),
+          
+        },
       ],
     },
   ],

@@ -49,6 +49,11 @@ const SummaryApi = {
             return `${backendDomain}/api/category/delete/${id}`
         },
     },
+    productByCategory:{
+        url:(id) => {
+            return `${backendDomain}/api/products/category/${id}`
+        },
+    }
 }
 const headers = {
     'Content-Type': 'application/json',

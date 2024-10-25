@@ -1,8 +1,9 @@
 <script setup>
+import CategoriesList from '@/components/home/categoriesList.vue';
 </script>
 
 <template>
-<div class="text-red-600">
-  This is a home page
-</div> 
+<div class="container mx-auto p-4">
+  <CategoriesList/>
+</div>
 </template>

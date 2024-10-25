@@ -36,5 +36,8 @@ router.delete("/product/delete/:id", authToken, product().deleteProduct);
 router.post("/category/create", authToken, category().upload.array("image", 10), category().createCategory)
 router.get("/category", authToken, category().allCategory)
 router.put("/category/update/:id", authToken, category().upload.array("image", 10), category().updateCategory)
-router.delete("/category/delete/:id", authToken, category().deleteCategory)
+router.delete("/category/delete/:id", authToken, category().deleteCategory);
+
+// category by products
+router.get("/products/category/:categoryId", authToken, product().productByCategory)
 module.exports = router;

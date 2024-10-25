@@ -1,25 +1,21 @@
 const productModel = require("../models/product");
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 const multer = require("multer");
 const Product = () => {
   // create Product
   const createProduct = async (req, res) => {
     try {
       let productData = req.body;
-      productData.image = req.files.map(
-        (file) => `${file.path}`
-      );
+      productData.image = req.files.map((file) => `${file.path}`);
       const product = new productModel(productData);
       const result = await product.save();
-      res
-        .status(201)
-        .json({
-          message: "Product added successfully",
-          error: false,
-          success: true,
-          data: result,
-        });
+      res.status(201).json({
+        message: "Product added successfully",
+        error: false,
+        success: true,
+        data: result,
+      });
     } catch (err) {
       res.status(400).json({
         message: err.message,
@@ -45,30 +41,36 @@ const Product = () => {
   const getAllProduct = async (req, res) => {
     try {
       const products = await productModel.find({}).sort({ createdAt: -1 });
-      let filteredProducts = []
+      let filteredProducts = [];
       if (req.query.search) {
-         filteredProducts = products.filter(product => 
-          product.productName.toLowerCase().includes(req.query.search.toLowerCase()) ||
-          product.brandName.toLowerCase().includes(req.query.search.toLowerCase()) ||
-          product.category.toLowerCase().includes(req.query.search.toLowerCase())
-        )
+        filteredProducts = products.filter(
+          (product) =>
+            product.productName
+              .toLowerCase()
+              .includes(req.query.search.toLowerCase()) ||
+            product.brandName
+              .toLowerCase()
+              .includes(req.query.search.toLowerCase()) ||
+            product.category
+              .toLowerCase()
+              .includes(req.query.search.toLowerCase())
+        );
+      } else {
+        filteredProducts = products;
       }
-      else{
-        filteredProducts = products
-      }
-      
+
       const allProducts = filteredProducts.map((product) => ({
-          ...product,
-          image:  product.image.map((image) => `${process.env.BACKEND_URL}/${image}`),
-      }))
-      res
-        .status(200)
-        .json({
-          message: "Products fetched successfully",
-          error: false,
-          success: true,
-          data: allProducts,
-        });
+        ...product,
+        image: product.image.map(
+          (image) => `${process.env.BACKEND_URL}/${image}`
+        ),
+      }));
+      res.status(200).json({
+        message: "Products fetched successfully",
+        error: false,
+        success: true,
+        data: allProducts,
+      });
     } catch (err) {
       res.status(400).json({
         message: err.message,
@@ -85,14 +87,12 @@ const Product = () => {
     try {
       const id = req.params.id;
       const product = await productModel.updateOne({ _id: id }, req.body);
-      res
-        .status(200)
-        .json({
-          message: "Product updated successfully",
-          error: false,
-          success: true,
-          data: product,
-        });
+      res.status(200).json({
+        message: "Product updated successfully",
+        error: false,
+        success: true,
+        data: product,
+      });
     } catch (err) {
       res.status(400).json({
         message: err.message,
@@ -117,24 +117,22 @@ const Product = () => {
       // delete image from server
       if (existingProduct.image && existingProduct.image.length > 0) {
         existingProduct.image.forEach((image) => {
-          const imagePath = path.join(__dirname, "..", image); // Adjust this path       
+          const imagePath = path.join(__dirname, "..", image); // Adjust this path
           fs.unlink(imagePath, (err) => {
             if (err) {
-              throw new Error(err)
+              throw new Error(err);
             }
           });
         });
       }
       // delete product from database
       const product = await productModel.deleteOne({ _id: id });
-      res
-        .status(200)
-        .json({
-          message: "Product deleted successfully",
-          error: false,
-          success: true,
-          data: product,
-        });
+      res.status(200).json({
+        message: "Product deleted successfully",
+        error: false,
+        success: true,
+        data: product,
+      });
     } catch (err) {
       res.status(400).json({
         message: err.message,
@@ -144,7 +142,33 @@ const Product = () => {
       });
     }
   };
-  return { createProduct, upload, getAllProduct, updateProduct, deleteProduct };
+  const productByCategory = async (req, res) => {
+    try {
+      const category = req.params.categoryId;
+      const products = await productModel.find({ category: category });
+      res.status(200).json({
+        message: "Products fetched successfully",
+        error: false,
+        success: true,
+        data: products,
+      });
+    } catch (err) {
+      res.status(400).json({
+        message: err.message,
+        error: true,
+        success: false,
+        data: null,
+      });
+    }
+  };
+  return {
+    createProduct,
+    upload,
+    getAllProduct,
+    updateProduct,
+    deleteProduct,
+    productByCategory,
+  };
 };
 
 module.exports = Product;
