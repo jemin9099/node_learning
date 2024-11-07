@@ -1,5 +1,7 @@
 <script setup>
-import { ref , defineProps , computed , onMounted} from 'vue'
+import { ref, defineProps, computed, onMounted } from 'vue'
+// import VueSlider from 'vue-slider-component'
+// import 'vue-slider-component/theme/default.css'
 import common from '@/common/index'
 import axios from 'axios'
 const { SummaryApi, authHeaders } = common
@@ -7,44 +9,47 @@ const categoryList = ref()
 const props = defineProps({
     filterData: Array
 })
-
+const range = ref([20, 80])
 const Brand = computed(() => {
     let brand = []
     props.filterData.forEach(item => {
-        if(!brand.includes(item.brandName)){
+        if (!brand.includes(item.brandName)) {
             brand.push(item.brandName)
         }
     })
     return brand
 })
 const getCategory = async () => {
-  try {
-    let { data, status } = await axios.get(SummaryApi.getCategory.url ,{ headers: authHeaders })
-    if (status === 200) {
-      categoryList.value = data.data      
+    try {
+        let { data, status } = await axios.get(SummaryApi.getCategory.url, { headers: authHeaders })
+        if (status === 200) {
+            categoryList.value = data.data
+        }
     }
-  }
-  catch (error) {
-    console.log(error);
-  }
+    catch (error) {
+        console.log(error);
+    }
 }
 const getCategoryName = (id) => {
-  const category = categoryList.value?.find((category) => category._doc._id === id)
-  if (category) {
-    return category._doc.name
-  }
+    const category = categoryList.value?.find((category) => category._doc._id === id)
+    if (category) {
+        return category._doc.name
+    }
 }
 const Category = computed(() => {
     let category = []
     props.filterData.forEach(item => {
-        console.log(category.includes(item.category))
-        if(!category.includes(item.category)){
+        if (!category.includes(item.category)) {
             category.push(item.category)
         }
     })
     return category
 })
-
+const updateRange = () => {
+    if (minValue.value > maxValue.value) {
+        minValue.value = maxValue.value
+    }
+}
 onMounted(() => {
     getCategory()
 })
@@ -63,13 +68,13 @@ onMounted(() => {
                 <div>
                     <h2 class="border-b filter-title">Brand Options</h2>
                     <div class="mb-30 filter-options">
-                        <div class="relative flex gap-x-3 mb-3" v-for="(brand , index) in Brand" :key="index">
+                        <div class="relative flex gap-x-3 mb-3" v-for="(brand, index) in Brand" :key="index">
                             <div class="flex h-6 items-center">
                                 <input id="offers" name="offers" type="checkbox" :value="brand"
                                     class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="offers" class="font-medium text-gray-900">{{brand}}</label>
+                                <label for="offers" class="font-medium text-gray-900">{{ brand }}</label>
                             </div>
                         </div>
                     </div>
@@ -77,14 +82,25 @@ onMounted(() => {
                 <div>
                     <h2 class="border-b filter-title">Category Options</h2>
                     <div class="mb-30 filter-options">
-                        <div class="relative flex gap-x-3 mb-3" v-for="(category , index) in Category" :key="index">
+                        <div class="relative flex gap-x-3 mb-3" v-for="(category, index) in Category" :key="index">
                             <div class="flex h-6 items-center">
                                 <input id="offers" name="offers" type="checkbox" :value="category"
                                     class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="offers" class="font-medium text-gray-900">{{getCategoryName(category)}}</label>
+                                <label for="offers" class="font-medium text-gray-900">{{ getCategoryName(category)
+                                    }}</label>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="border-b filter-title">Price Options</h2>
+                    <div>
+                        <!-- <vue-slider v-model="range"></vue-slider> -->
+                        <div class="flex justify-between mt-4">
+                            <span>Min: {{ range[0] }}</span>
+                            <span>Max: {{ range[1] }}</span>
                         </div>
                     </div>
                 </div>
