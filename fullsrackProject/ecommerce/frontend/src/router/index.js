@@ -29,6 +29,11 @@ const router = createRouter({
           component: () => import('../views/Register.vue'),
         },
         {
+          path: '/resetpassword/:id/:token',
+          name: 'reset-password',
+          component: () => import('../views/ResetPassword.vue'),
+        },
+        {
           path: '/admin-panel',
           name: 'admin-panel',
           component: () => import('../views/AdminPanel.vue'),
@@ -61,6 +66,12 @@ const router = createRouter({
           path: '/category/:id',
           name: 'categoryByProducts',
           component: () => import('../views/categoryProduct.vue'),
+          
+        },
+        {
+          path: '/product/:id',
+          name: 'productDetail',
+          component: () => import('../views/productDetail/index.vue'),
           
         },
       ],

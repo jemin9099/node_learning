@@ -37,19 +37,16 @@ getAllCategoryProducts()
 </script>
 <template>
    <div class="container mx-auto p-3">
-      <h1 class="text-2xl font-medium leading-tight ml-3">Category Product</h1>
-      <div class="flex">
-         <div class="w-3/12 p-4">
-            <sidebarFilter :filterData="allProducts" />
-         </div>
-
-         <div class="w-9/12 p-4">
+      <h1 class="text-2xl font-medium leading-tight ml-3 mb-4 dark:text-white">Category Product</h1>
+      <div class="flex ">
+         
+         <div class="w-full p-4 ">
             <section
-               class=" grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14  mb-5">
-               <div class="w-full bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
+               class=" grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 sm:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-5 p-2 mb-5">
+               <div class="w-full bg-gray-100 shadow-md rounded-xl"
                   v-for="(product, index) in getTableData()" :key="index">
                   <a href="#">
-                     <div class="product-image">
+                     <div class="product-image duration-500 hover:scale-110">
                         <img :src="product.image[0]" alt="Product" class=" object-contain rounded-t-xl product-img" />
                      </div>
 
@@ -69,9 +66,10 @@ getAllCategoryProducts()
                            </del>
                         </div>
 
-                        <div class="w-full flex justify-center">
+                        <div class="w-full lg:flex justify-center">
                            <button
                               class="w-full border-2 border-indigo-600 flex items-center justify-center text-indigo-600 font-bold px-3 py-2 rounded-md text-sm mt-4 hover:bg-indigo-600 hover:text-white duration-300 mr-3">
+                              <mdicon name="currency-usd" class="mr-1" />
                               Buy Now
                            </button>
                            <button

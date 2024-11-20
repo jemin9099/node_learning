@@ -6,6 +6,14 @@ const SummaryApi = {
     login:{
         url:`${backendDomain}/api/login`,
     },
+    forgotPassword:{
+        url:`${backendDomain}/api/requestPasswordReset`,
+    },
+    resetPassword:{
+        url:(id,token) => {
+            return `${backendDomain}/api/resetPassword/${id}/${token}`
+        },
+    },
     userDetail:{
         url:`${backendDomain}/api/user-detail`,
     },
@@ -22,6 +30,11 @@ const SummaryApi = {
     },
     getAllProduct:{
         url:`${backendDomain}/api/products`,
+    },
+    productById:{
+        url:(id) => {
+            return `${backendDomain}/api/product/${id}`
+        },
     },
     updateProduct:{
         url:(id) => {

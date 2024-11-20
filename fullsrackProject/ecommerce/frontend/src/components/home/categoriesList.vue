@@ -24,7 +24,7 @@ getAllCategories()
             <div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden p-3 bg-white flex items-center justify-center mx-auto">
                 <img :src="category.image[0]" alt="" class="h-full object-contain">
             </div>
-            <p class="text-center text-sm md:text-base capitalize">{{category._doc.name}}</p>
+            <p class="text-center text-sm md:text-base capitalize dark:text-white mt-1">{{category._doc.name}}</p>
         </div>
     </div>
 </template>

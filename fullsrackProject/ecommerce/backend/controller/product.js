@@ -40,7 +40,7 @@ const Product = () => {
   // get all Product
   const getAllProduct = async (req, res) => {
     try {
-      const products = await productModel.find({}).sort({ createdAt: -1 });
+      const products = await productModel.find({}).sort({ createdAt: -1 }).populate('category').exec();
       let filteredProducts = [];
       if (req.query.search) {
         filteredProducts = products.filter(
@@ -145,12 +145,32 @@ const Product = () => {
   const productByCategory = async (req, res) => {
     try {
       const category = req.params.categoryId;
-      const products = await productModel.find({ category: category });
+      const products = await productModel.find({ category: category }).populate('category').exec();
       res.status(200).json({
         message: "Products fetched successfully",
         error: false,
         success: true,
         data: products,
+      });
+    } catch (err) {
+      res.status(400).json({
+        message: err.message,
+        error: true,
+        success: false,
+        data: null,
+      });
+    }
+  };
+
+  const getById = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const product = await productModel.findOne({ _id: id }).populate('category').exec();
+      res.status(200).json({
+        message: "Product fetched successfully",
+        error: false,
+        success: true,
+        data: product,
       });
     } catch (err) {
       res.status(400).json({
@@ -168,6 +188,7 @@ const Product = () => {
     updateProduct,
     deleteProduct,
     productByCategory,
+    getById
   };
 };
 

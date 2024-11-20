@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import Logo from './Logo.vue';
 import { useUserData } from '@/composable/useUserData';
@@ -17,14 +17,14 @@ const logout = () => {
 }
 </script>
 <template>
-   <header class="h-16 shadow-md bg-white">
+   <header class="h-16 shadow-md bg-white dark:bg-slate-200">
     <div class="h-full flex items-center container mx-auto px-4 justify-between">
         <RouterLink to="/">
             <Logo/>
         </RouterLink>
-        <div class="border rounded overflow-hidden flex">
+        <div class="border dark:border-gray-800 rounded overflow-hidden md:flex hidden">
             <input type="text" class="px-4 py-2" placeholder="Search...">
-            <button class="flex items-center justify-center px-4 border-l">
+            <button class="flex items-center dark:border-gray-800 justify-center px-4 border-l">
               <svg class="h-4 w-4 text-grey-dark" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"/></svg>
             </button>
           </div>

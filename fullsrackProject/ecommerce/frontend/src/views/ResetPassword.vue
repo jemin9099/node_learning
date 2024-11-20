@@ -2,14 +2,17 @@
 import axios from 'axios';
 import common from '@/common';
 import {ref} from 'vue'
+import { useRoute , useRouter } from 'vue-router';
+const route = useRoute()
+const router = useRouter();
 const {SummaryApi , headers} = common
-const email = ref('')
+const password = ref('')
 const emailError = ref(false)
 const handleSubmit = async() => {
-    if(email.value != ''){
-        const { data , status} = await axios.post(SummaryApi.forgotPassword.url , {email:email.value} ,{headers: headers})
+    if(password.value != ''){
+        const { data , status} = await axios.post(SummaryApi.resetPassword.url(route.params.id , route.params.token) , {password:password.value} ,{headers: headers})
         if(status === 200){
-
+            router.push({name:'login'})
         }
     }
     else{
@@ -24,7 +27,7 @@ const handleSubmit = async() => {
             class="mt-7 bg-white  rounded-xl shadow-xl dark:bg-gray-800 dark:border-gray-700 border-2 border-red-300">
             <div class="p-4 sm:p-7">
                 <div class="text-center">
-                    <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">Forgot password?</h1>
+                    <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">Reset password?</h1>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                         Remember your password?
                         <RouterLink class="text-red-600 decoration-2 hover:underline font-medium" :to="{name:'login'}">
@@ -35,12 +38,11 @@ const handleSubmit = async() => {
 
                 <div class="mt-5">
                     <form @submit.prevent="handleSubmit">
-                        <div class="grid gap-y-4">
+                        <div class="grid gap-y-4"> 
                             <div>
-                                <label for="email" class="block text-sm font-bold ml-1 mb-2 dark:text-white">Email
-                                    address</label>
+                                <label for="email" class="block text-sm font-bold ml-1 mb-2 dark:text-white">New Password</label>
                                 <div class="relative">
-                                    <input type="email" id="email" name="email" v-model="email"
+                                    <input type="text" id="email" name="email" v-model="password"
                                         class="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-red-500 focus:ring-red-500 shadow-sm"
                                         required aria-describedby="email-error">
                                 </div>

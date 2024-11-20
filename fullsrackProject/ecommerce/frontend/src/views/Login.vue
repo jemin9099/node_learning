@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useToast } from '@/common/useToast.js'
 import common from '@/common/index'
 const { toastTypeError, toastTypeSuccess } = useToast()
-const { SummaryApi, headers , authHeaders} = common
+const { SummaryApi, headers, authHeaders } = common
 const router = useRouter()
 const showPassword = ref(false)
 const emailError = ref('');
@@ -21,19 +21,23 @@ const validateEmail = () => {
 const validatePassword = () => {
     passwordError.value = loginForm.value.password.length >= 6 ? '' : 'Password must be at least 6 characters';
 };
-const handleLogin = async() => {
+const userDetail = async () => {
+    const { data: userFetchData } = await axios.get(SummaryApi.userDetail.url, { headers: authHeaders })
+    localStorage.setItem('user', JSON.stringify(userFetchData.data))
+    router.push({ name: 'home' })
+}
+const handleLogin = async () => {
     validateEmail();
     validatePassword();
     if (!emailError.value && !passwordError.value) {
         try {
-            const {data , status} = await axios.post(SummaryApi.login.url, loginForm.value ,  {headers: headers})
+            const { data, status } = await axios.post(SummaryApi.login.url, loginForm.value, { headers: headers })
             if (status === 200) {
                 if (data.success) {
-                    localStorage.setItem('token' , data.data)
+                    localStorage.removeItem('token')
+                    localStorage.setItem('token', data.data)
                     toastTypeSuccess(data.message)
-                    const {data:userFetchData} = await axios.get(SummaryApi.userDetail.url, {headers: authHeaders})
-                    localStorage.setItem('user' , JSON.stringify(userFetchData.data))
-                    router.push({name: 'home'} )
+                    await userDetail()
                 }
             }
         }
@@ -56,17 +60,16 @@ const handleLogin = async() => {
                         <label for="email" class="pb-2"> Email: </label>
                         <div class="bg-slate-100 p-2 rounded-md" :class="{ 'is-invalid': emailError }">
                             <input type="email" placeholder="Enter your email" @input="validateEmail"
-                                 v-model="loginForm.email"
-                                class="w-full h-full outline-none bg-transparent">
-                            </div>
-                            <span v-if="emailError" class="error">{{ emailError }}</span>
+                                v-model="loginForm.email" class="w-full h-full outline-none bg-transparent">
+                        </div>
+                        <span v-if="emailError" class="error">{{ emailError }}</span>
                     </div>
                     <div class="mt-3 grid">
                         <label for="password" class="pb-2"> Password: </label>
                         <div class="bg-slate-100 p-2 flex rounded-md" :class="{ 'is-invalid': passwordError }">
                             <input :type="showPassword ? 'text' : 'password'" @input="validatePassword"
-                                 v-model="loginForm.password"
-                                placeholder="Enter your password" class="w-full h-full outline-none bg-transparent ">
+                                v-model="loginForm.password" placeholder="Enter your password"
+                                class="w-full h-full outline-none bg-transparent ">
 
                             <div class="cursor-pointer" @click="showPassword = !showPassword">
                                 <span v-if="showPassword">
@@ -99,9 +102,10 @@ const handleLogin = async() => {
 <style scoped>
 .is-invalid {
     border: 1px solid red;
-  }
-  .error {
+}
+
+.error {
     color: red;
     font-size: 0.875em;
-  }
+}
 </style>

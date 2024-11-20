@@ -1,5 +1,6 @@
 <script setup >
 import { Swiper, SwiperSlide } from 'swiper/vue';
+import 'swiper/css';
 import { ref ,onMounted} from 'vue'
 import axios from 'axios'
 import product from './product.vue';
@@ -16,6 +17,7 @@ const getCategory = async () => {
     try {
         let { data, status } = await axios.get(SummaryApi.getCategory.url, { headers: authHeaders })
         if (status === 200) {
+            console.log(props.category);
             categoryList.value = data.data
             categoryID.value = categoryList.value.filter((item) => item._doc.name === props.category)[0]._doc._id;
             getAllCategoryProducts()
@@ -38,12 +40,14 @@ const getAllCategoryProducts = async () => {
    }
 }
 onMounted(() => {
-    getCategory()
+    setTimeout(() => {
+      getCategory()
+    }, 1000);
 })
 </script>
 <template>
     <div class="w-full p-2 mt-5">
-        <p class="text-lg font-bold mb-3">{{heading}}</p>
+        <p class="text-lg font-bold mb-3 dark:text-white">{{heading}}</p>
         <swiper :slidesPerView="4" :spaceBetween="30"  :breakpoints="{
             '320': {
               slidesPerView: 1,

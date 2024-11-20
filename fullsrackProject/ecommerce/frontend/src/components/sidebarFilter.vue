@@ -67,11 +67,11 @@ onMounted(() => {
             <div class="filter-body">
                 <div>
                     <h2 class="border-b filter-title">Brand Options</h2>
-                    <div class="mb-30 filter-options">
+                    <div class="mb-30 ">
                         <div class="relative flex gap-x-3 mb-3" v-for="(brand, index) in Brand" :key="index">
                             <div class="flex h-6 items-center">
                                 <input id="offers" name="offers" type="checkbox" :value="brand"
-                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" :checked="true" />
                             </div>
                             <div class="text-sm leading-6">
                                 <label for="offers" class="font-medium text-gray-900">{{ brand }}</label>
@@ -79,9 +79,9 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
-                <div>
+                <div v-if="Category.length > 1">
                     <h2 class="border-b filter-title">Category Options</h2>
-                    <div class="mb-30 filter-options">
+                    <div class="mb-30 ">
                         <div class="relative flex gap-x-3 mb-3" v-for="(category, index) in Category" :key="index">
                             <div class="flex h-6 items-center">
                                 <input id="offers" name="offers" type="checkbox" :value="category"
@@ -95,12 +95,20 @@ onMounted(() => {
                     </div>
                 </div>
                 <div>
-                    <h2 class="border-b filter-title">Price Options</h2>
-                    <div>
-                        <!-- <vue-slider v-model="range"></vue-slider> -->
-                        <div class="flex justify-between mt-4">
-                            <span>Min: {{ range[0] }}</span>
-                            <span>Max: {{ range[1] }}</span>
+                    <h2 class="font-xbold body-font border-b filter-title">Price Range</h2>
+                    <div class="mb-3 theme-clr xs2-font flex justify-between">
+                        <span id="slider-range-value1">$0</span>
+                        <span id="slider-range-value2">$500000</span>
+                    </div>
+                    <div class="mb-30 w-full ">
+                        <div>
+                            <div id="slider-range">
+                                <form>
+                                    <div class="form-group">
+                                        <input type="range" class="form-control-range w-full" id="">
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
